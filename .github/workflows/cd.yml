@@ -10,8 +10,8 @@ on:
       - configurar-ci-cd
 
 jobs:
-  package-project:
-    name: Prepare delivery package
+  build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -24,9 +24,29 @@ jobs:
           mkdir dist
           cp index.html style.css script.js README.md dist/
 
-      - name: Upload delivery package
+      - name: Upload build artifact
         uses: actions/upload-artifact@v7
-
         with:
           name: lista-de-tarefas-site
           path: dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: lista-de-tarefas-site
+          path: dist
+
+      - name: Validate delivery package
+        run: |
+          test -f dist/index.html
+          test -f dist/style.css
+          test -f dist/script.js
+          test -f dist/README.md
+          echo "Pacote pronto para entrega."
+
