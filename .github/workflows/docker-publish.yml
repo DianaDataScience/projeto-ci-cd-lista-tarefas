@@ -31,4 +31,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: dianadatatscience/lista-tarefas:latest
+          tags: dianadatascience/lista-tarefas:latest
+
