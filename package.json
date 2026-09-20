@@ -1,0 +1,8 @@
+{
+  "name": "lista-de-tarefas",
+  "version": "1.0.0",
+  "description": "Aplicação simples de lista de tarefas",
+  "scripts": {
+    "test": "node --test"
+  }
+}
