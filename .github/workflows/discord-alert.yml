@@ -1,0 +1,40 @@
+name: Discord Alerts
+
+on:
+  push:
+    branches:
+      - main
+      - alertas-discord
+
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - closed
+
+jobs:
+  notify-discord:
+    name: Send alert to Discord
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send GitHub event to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPOSITORY: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          REF_NAME: ${{ github.ref_name }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+        run: |
+          MESSAGE="GitHub Actions: evento ${EVENT_NAME} no repositório ${REPOSITORY}. Autor: ${ACTOR}. Referência: ${REF_NAME}. Execução: ${RUN_URL}"
+
+          jq -n --arg content "$MESSAGE" '{content: $content}' > payload.json
+
+          curl --fail-with-body -sS \
+            -H "Content-Type: application/json" \
+            -X POST \
+            "$DISCORD_WEBHOOK_URL" \
+            --data @payload.json
